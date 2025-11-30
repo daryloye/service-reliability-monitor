@@ -1,11 +1,24 @@
 import Fastify from "fastify";
+import { startScheduler } from "./core/scheduler";
+import { healthRoutes } from "./routes/health.routes";
+import { servicesRoutes } from "./routes/services.routes";
 
-const app = Fastify({ logger: true });
+async function buildServer() {
+  const app = Fastify({ logger: true });
 
-app.get("/", async () => {
-  return { status: "ok" };
-});
+  // register routes
+  app.register(healthRoutes);
+  app.register(servicesRoutes);
 
-app.listen({ port: 8080, host: "0.0.0.0" }).then(() => {
-  console.log("Server running on http://localhost:8080");
+  // start scheduler
+  startScheduler();
+
+  return app;
+}
+
+buildServer().then((app) => {
+  app.listen({ port: 3000 }, (err, address) => {
+    if (err) throw err;
+    console.log(`API running at ${address}`);
+  });
 });

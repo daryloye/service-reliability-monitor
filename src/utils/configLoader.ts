@@ -10,12 +10,15 @@ export interface ServiceConfig {
 }
 
 export interface AppConfig {
+  interval: number;
   services: ServiceConfig[];
 }
 
 const CONFIG_PATH = path.join(process.cwd(), "src/config/services.yaml");
 
-export function loadConfig(): AppConfig {
+let cachedConfig: AppConfig | null = null;
+
+function parseConfig(): AppConfig {
   if (!fs.existsSync(CONFIG_PATH)) {
     throw new Error(`Config file not found at: ${CONFIG_PATH}`);
   }
@@ -25,6 +28,10 @@ export function loadConfig(): AppConfig {
 
   if (!parsed || !Array.isArray(parsed.services)) {
     throw new Error("Invalid config format. Expected { services: [...] }");
+  }
+
+  if (typeof parsed.interval !== "number") {
+    throw new Error("Missing or invalid 'interval' in root config.");
   }
 
   // Validate each service entry
@@ -43,4 +50,20 @@ export function loadConfig(): AppConfig {
   });
 
   return parsed;
+}
+
+export function loadConfig(): AppConfig {
+  if (!cachedConfig) {
+    cachedConfig = parseConfig();
+  }
+  return cachedConfig;
+}
+
+export function reloadConfig(): AppConfig {
+  cachedConfig = parseConfig();
+  return cachedConfig;
+}
+
+export function resetCache() {
+  cachedConfig = null;
 }

@@ -1,7 +1,7 @@
 import fs from "fs";
 import * as yaml from "js-yaml";
 import path from "path";
-import { AppConfig, loadConfig } from "../src/utils/configLoader";
+import { AppConfig, loadConfig, resetCache } from "../src/utils/configLoader";
 
 jest.mock("fs");
 jest.mock("js-yaml");
@@ -11,10 +11,12 @@ const CONFIG_PATH = path.join(process.cwd(), "src/config/services.yaml");
 describe("configLoader", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    resetCache();
   });
 
   test("loads and parses valid services.yaml correctly", () => {
     const mockConfig: AppConfig = {
+      interval: 10,
       services: [
         {
           name: "test-service",
@@ -58,6 +60,7 @@ describe("configLoader", () => {
     (fs.existsSync as jest.Mock).mockReturnValue(true);
     (fs.readFileSync as jest.Mock).mockReturnValue("bad");
     (yaml.load as jest.Mock).mockReturnValue({
+      interval: 10,
       services: [
         { name: "incomplete-service" }, // Missing url + expectedVersion
       ],
