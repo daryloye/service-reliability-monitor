@@ -2,21 +2,21 @@ interval: 10    # scheduler runs every 10 seconds
 
 services:
   - name: user-service
-    url: "http://localhost:3001/health"
+    url: "http://host.docker.internal:3001/health"
     expectedVersion: "1.4.2"
     environment: "production"
 
   - name: auth-service
-    url: "http://localhost:3002/health"
+    url: "http://host.docker.internal:3002/health"
     expectedVersion: "2.1.0"
     environment: "production"
 
   - name: billing-service
-    url: "http://localhost:3003/version"
+    url: "http://host.docker.internal:3003/version"
     expectedVersion: "0.9.8"
     environment: "staging"
 
   - name: notifications-service
-    url: "http://localhost:3004/status"
+    url: "http://host.docker.internal:3004/status"
     expectedVersion: "3.0.1"
     environment: "staging"
