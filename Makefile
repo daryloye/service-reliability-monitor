@@ -1,6 +1,6 @@
 COMPOSE_FILE=docker-compose.test-services.yml
 
-.PHONY: up down clean rebuild
+.PHONY: up down clean rebuild tests
 
 # Start all test services
 up:
@@ -22,3 +22,7 @@ rebuild:
 	@echo "Rebuilding test services..."
 	docker-compose -f $(COMPOSE_FILE) down --rmi all --volumes --remove-orphans
 	docker-compose -f $(COMPOSE_FILE) up --build -d
+
+tests:
+	@echo "Running tests..."
+	npm run test
