@@ -17,8 +17,6 @@ async function buildServer() {
     return reply.sendFile("dashboard.html");
   });
 
-  console.log("dirname:", __dirname);
-
   app.register(healthRoutes);
   app.register(servicesRoutes);
 
