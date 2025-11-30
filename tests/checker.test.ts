@@ -1,3 +1,6 @@
+const { initDb } = require("../src/db/storage");
+initDb(":memory:");
+
 import { request } from "undici";
 import { checkService } from "../src/core/checker";
 import { ServiceConfig } from "../src/utils/configLoader";
@@ -68,7 +71,7 @@ describe("checkService", () => {
     const result = await checkService(baseService);
 
     expect(result.ok).toBe(true);
-    expect(result.version).toBeUndefined();
+    expect(result.version).toBeNull();
   });
 
   test("marks service as down when status code is not 2xx", async () => {

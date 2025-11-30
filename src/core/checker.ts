@@ -6,11 +6,11 @@ export interface HealthResult {
   ok: boolean;
   statusCode: number | null;
   latency: number;
-  version?: string;
-  expectedVersion?: string;
-  versionMismatch?: boolean;
+  version: string | null;
+  expectedVersion: string;
+  versionMismatch: boolean;
   timestamp: string;
-  error?: string;
+  error: string | null;
 }
 
 export async function checkService(service: ServiceConfig): Promise<HealthResult> {
@@ -23,35 +23,40 @@ export async function checkService(service: ServiceConfig): Promise<HealthResult
       bodyTimeout: 5000,
     });
 
-    const latency = performance.now() - start;
-    let version: string | undefined;
+    const latency = Math.round(performance.now() - start);
 
-    // Try header-based version
-    if (headers["x-service-version"]) {
-      version = Array.isArray(headers["x-service-version"])
-        ? headers["x-service-version"][0]
-        : (headers["x-service-version"] as string);
+    let version: string | null = null;
+
+    // Header-based version
+    const headerVersion = headers["x-service-version"];
+    if (headerVersion) {
+      version = Array.isArray(headerVersion)
+        ? headerVersion[0]
+        : headerVersion;
     }
 
-    // Try body-based version (if JSON)
+    // Body-based version
     try {
       const json = await body.json() as any;
-      if (json.version) {
+      if (json?.version) {
         version = json.version;
       }
     } catch {
-      // Body is not JSON or no version field — ignore silently
+      // Body is not JSON or no version field — ignore
     }
+
+    const versionMismatch = version !== null && version !== service.expectedVersion;
 
     return {
       name: service.name,
       ok: statusCode >= 200 && statusCode < 300,
       statusCode,
-      latency: Math.round(latency),
+      latency,
       version,
       expectedVersion: service.expectedVersion,
-      versionMismatch: version ? version !== service.expectedVersion : undefined,
+      versionMismatch,
       timestamp: new Date().toISOString(),
+      error: null,
     };
   } catch (err: any) {
     const latency = Math.round(performance.now() - start);
@@ -61,9 +66,9 @@ export async function checkService(service: ServiceConfig): Promise<HealthResult
       ok: false,
       statusCode: null,
       latency,
-      version: undefined,
+      version: null,
       expectedVersion: service.expectedVersion,
-      versionMismatch: undefined,
+      versionMismatch: false,
       timestamp: new Date().toISOString(),
       error: err?.message ?? "Unknown error",
     };
