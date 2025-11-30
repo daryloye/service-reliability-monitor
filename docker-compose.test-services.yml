@@ -1,0 +1,20 @@
+services:
+  user-service:
+    build: ./test-services/user-service
+    ports:
+      - "3001:3001"
+
+  auth-service:
+    build: ./test-services/auth-service
+    ports:
+      - "3002:3002"
+
+  billing-service:
+    build: ./test-services/billing-service
+    ports:
+      - "3003:3003"
+
+  notifications-service:
+    build: ./test-services/notifications-service
+    ports:
+      - "3004:3004"

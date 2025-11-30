@@ -1,20 +1,20 @@
 services:
   - name: user-service
-    url: "https://api.example.com/users/health"
+    url: "http://localhost:3001/health"
     expectedVersion: "1.4.2"
     environment: "production"
 
   - name: auth-service
-    url: "https://auth.example.com/health"
+    url: "http://localhost:3002/health"
     expectedVersion: "2.1.0"
     environment: "production"
 
   - name: billing-service
-    url: "https://billing.example.com/version"
+    url: "http://localhost:3003/version"
     expectedVersion: "0.9.8"
     environment: "staging"
 
   - name: notifications-service
-    url: "https://notify.example.com/status"
+    url: "http://localhost:3004/status"
     expectedVersion: "3.0.1"
     environment: "staging"
