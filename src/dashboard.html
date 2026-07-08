@@ -12,7 +12,10 @@
     .error { color: #b00020; }
     .ok { color: green; font-weight: bold; }
     .history { margin-top: 15px; }
+    .history-scroll { max-height: 340px; overflow-y: auto; border: 1px solid #ddd; border-radius: 6px; }
     table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    .history-scroll table { margin-top: 0; }
+    .history-scroll th { position: sticky; top: 0; background: white; }
     th, td { border-bottom: 1px solid #ddd; padding: 6px; text-align: left; }
     .reload-btn { padding: 8px 12px; border: none; background: #007bff; color: white; border-radius: 6px; cursor: pointer; }
   </style>
@@ -72,12 +75,19 @@
         return;
       }
 
+      const scrollDiv = document.createElement('div');
+      scrollDiv.className = 'history-scroll';
+
       const table = document.createElement('table');
       table.innerHTML = `
-        <tr>
-          <th>Time</th><th>Status</th><th>Latency</th><th>Error</th>
-        </tr>
+        <thead>
+          <tr>
+            <th>Time</th><th>Status</th><th>Latency</th><th>Error</th>
+          </tr>
+        </thead>
       `;
+
+      const tbody = document.createElement('tbody');
 
       rows.forEach(row => {
         const tr = document.createElement('tr');
@@ -87,10 +97,12 @@
           <td>${row.latency} ms</td>
           <td>${row.error || ''}</td>
         `;
-        table.appendChild(tr);
+        tbody.appendChild(tr);
       });
 
-      historyDiv.appendChild(table);
+      table.appendChild(tbody);
+      scrollDiv.appendChild(table);
+      historyDiv.appendChild(scrollDiv);
       card.appendChild(historyDiv);
     }
 
